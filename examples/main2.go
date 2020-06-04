@@ -94,7 +94,7 @@ func main() {
 		log.Fatalf("Failed to register views for metrics: %v", err)
 	}
 
-	ctx, _ := tag.New(context.Background(), tag.Insert(keyMethod, "repl"), tag.Insert(keyClient, "cli"), tag.Insert(keySource, "source1"))
+	ctx, _ := tag.New(context.Background(), tag.Insert(keyMethod, "repl"), tag.Insert(keyClient, "cli"), tag.Insert(keySource, "source2"))
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		startTime := time.Now()
