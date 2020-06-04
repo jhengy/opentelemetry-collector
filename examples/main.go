@@ -20,10 +20,12 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"time"
 
 	"contrib.go.opencensus.io/exporter/ocagent"
+	ocprom "contrib.go.opencensus.io/exporter/prometheus"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -44,6 +46,19 @@ func main() {
 	}
 	trace.RegisterExporter(oce)
 	view.RegisterExporter(oce)
+
+	// expose metrics to prometheus
+	var exporter *ocprom.Exporter
+	if exporter, err = ocprom.NewExporter(ocprom.Options{}); err != nil {
+		panic("could not set up prometheus exporter")
+	}
+	//view.RegisterExporter(exporter)
+	go func() {
+		addr := ":9999"
+		log.Printf("Serving at %s", addr)
+		http.Handle("/metrics", exporter)
+		log.Fatal(http.ListenAndServe(addr, nil))
+	}()
 
 	// Some configurations to get observability signals out.
 	view.SetReportingPeriod(7 * time.Second)

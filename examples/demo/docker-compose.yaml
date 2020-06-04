@@ -73,6 +73,8 @@ services:
     command: ["bash", "-c", "go run /usr/src/main.go"]
     depends_on:
       - otel-agent
+    ports:
+      - "9999:9999"   # prometheus
 
   prometheus:
     container_name: prometheus

@@ -1,11 +1,21 @@
 receivers:
   opencensus:
     endpoint: 0.0.0.0:55678
-
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['metrics-load-generator:9999']
+          metric_relabel_configs: # problem 1: $1 resolve to "" 2. renamed metrics becomes untyped data
+            - source_labels: [__name__]
+              regex: (.*)
+              target_label: __name__
+              replacement: 'metrics_load_generator_$1'
 exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
-    namespace: promexample
     const_labels:
       label1: value1
   logging:
@@ -42,6 +52,6 @@ service:
       exporters: [logging, zipkin, jaeger]
       processors: [batch, queued_retry]
     metrics:
-      receivers: [opencensus]
+      receivers: [opencensus, prometheus]
       exporters: [logging,prometheus]
 
