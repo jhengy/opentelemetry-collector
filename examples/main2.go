@@ -55,6 +55,7 @@ func main() {
 	keyClient, _ := tag.NewKey("client")
 	keyMethod, _ := tag.NewKey("method")
 	keySource, _ := tag.NewKey("source")
+	keyDummy, _ := tag.NewKey("generator2")
 
 	mLatencyMs := stats.Float64("latency", "The latency in milliseconds", "ms")
 	mLineLengths := stats.Int64("line_lengths", "The length of each line", "By")
@@ -65,28 +66,28 @@ func main() {
 			Description: "The various latencies of the methods",
 			Measure:     mLatencyMs,
 			Aggregation: view.Distribution(0, 10, 50, 100, 200, 400, 800, 1000, 1400, 2000, 5000, 10000, 15000),
-			TagKeys:     []tag.Key{keyClient, keyMethod, keySource},
+			TagKeys:     []tag.Key{keyClient, keyMethod, keySource, keyDummy},
 		},
 		{
 			Name:        "opdemo/process_counts",
 			Description: "The various counts",
 			Measure:     mLatencyMs,
 			Aggregation: view.Count(),
-			TagKeys:     []tag.Key{keyClient, keyMethod, keySource},
+			TagKeys:     []tag.Key{keyClient, keyMethod, keySource, keyDummy},
 		},
 		{
 			Name:        "opdemo/line_lengths",
 			Description: "The lengths of the various lines in",
 			Measure:     mLineLengths,
 			Aggregation: view.Distribution(0, 10, 20, 50, 100, 150, 200, 500, 800),
-			TagKeys:     []tag.Key{keyClient, keyMethod, keySource},
+			TagKeys:     []tag.Key{keyClient, keyMethod, keySource, keyDummy},
 		},
 		{
 			Name:        "opdemo/line_counts",
 			Description: "The counts of the lines in",
 			Measure:     mLineLengths,
 			Aggregation: view.Count(),
-			TagKeys:     []tag.Key{keyClient, keyMethod, keySource},
+			TagKeys:     []tag.Key{keyClient, keyMethod, keySource, keyDummy},
 		},
 	}
 
@@ -94,7 +95,7 @@ func main() {
 		log.Fatalf("Failed to register views for metrics: %v", err)
 	}
 
-	ctx, _ := tag.New(context.Background(), tag.Insert(keyMethod, "repl"), tag.Insert(keyClient, "cli"), tag.Insert(keySource, "source2"))
+	ctx, _ := tag.New(context.Background(), tag.Insert(keyMethod, "repl"), tag.Insert(keyClient, "cli"), tag.Insert(keySource, "source2"), tag.Insert(keyDummy, "generator2"))
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		startTime := time.Now()
