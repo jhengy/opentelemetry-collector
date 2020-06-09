@@ -12,7 +12,7 @@ receivers:
             - source_labels: [__name__]
               regex: (.*)
               target_label: __name__
-              replacement: 'metrics_load_generator_$1'
+              replacement: 'metrics_load_generator_${DOLLAR_ONE}'
 exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
